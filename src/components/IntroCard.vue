@@ -91,6 +91,9 @@ const onClickDropdownItem = (event: MouseEvent): void => {
   }
   toggleDropdownVisibility();
 };
+/**
+ * @description Function to  handle the click on the start quiz button
+ */
 const onSubmit = (): void => {
   localStorage.setItem("DIFFICULTY", difficulty.value);
   router.push("/quiz");

@@ -55,7 +55,11 @@ const getDifficultyLevel = (): string => {
   const difficultyLevel: string | null = localStorage.getItem("DIFFICULTY");
   return difficultyLevel || "";
 };
-
+/**
+ * @description Function to check if the vlaidity information fetched from the local storage is valid or not
+ * @param {string} difficulty
+ * @returns {boolean} if valid or not
+ */
 const isValidDifficulty = (difficulty: string): boolean => {
   switch (difficulty) {
     case DIFFICULTY.LEVEL.EASY:
@@ -66,6 +70,9 @@ const isValidDifficulty = (difficulty: string): boolean => {
       return false;
   }
 };
+/**
+ * @description Function to fetch and store the questions based on difficulty
+ */
 const fetchQuestions = async (): Promise<void> => {
   try {
     const response: { data: RESPONSE } = await axios.get(
@@ -79,7 +86,11 @@ const fetchQuestions = async (): Promise<void> => {
     loading.value = false;
   }
 };
-
+/**
+ * @description Function to decide whether a question is selected or not and handle the style of the bubble accordingly
+ * @param {number} index
+ * @returns boolean
+ */
 const isQuestionSelected = (index: number): boolean => {
   if (selectedQuestion.value) {
     if (index !== selectedQuestion.value.index) return false;

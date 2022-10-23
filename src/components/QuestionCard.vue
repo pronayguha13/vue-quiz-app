@@ -67,11 +67,18 @@ const options = computed(() => {
 });
 /*---------computed---------*/
 /*---------Method Declaration---------*/
+/**
+ * @description Function to lisiten to the correct-selection event and raise the question-change event
+ */
 const handleCorrectSelection = () => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   emit("question-change", props.question!.index + 1, true);
 };
-
+/**
+ * @description Function to lisiten to the incorrect-selection event and raise the question-change event
+ */
 const handleIncorrectSelection = () => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   emit("question-change", props.question!.index + 1, false);
 };
 /*---------Method Declaration---------*/

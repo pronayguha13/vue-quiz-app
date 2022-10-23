@@ -27,6 +27,9 @@ const emit = defineEmits(["correct-selection", "incorrect-selection"]);
 const isSuccess = ref<boolean>(false);
 /*-----Ref declaration-----*/
 /*-----Methods declaration-----*/
+/**
+ * @description Function to handle the click on the option and event correct-selection/incorrect-selection based on the correctness
+ */
 const handleOptionClick = (): void => {
   if (props.option.isCorrect) {
     isSuccess.value = true;

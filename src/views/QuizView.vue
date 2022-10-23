@@ -1,13 +1,16 @@
 <template>
   <MDBSpinner grow color="success" v-if="loading" />
   <div class="container">
-    <QuestionBubble
-      v-for="(question, index) in questions"
-      :key="index"
-      :question-number="index + 1"
-    >
-    </QuestionBubble>
-    <QuestionCard />
+    <div class="bubble-block">
+      <QuestionBubble
+        v-for="(question, index) in questions"
+        :key="index"
+        :question-number="index + 1"
+        :class="isQuestionSelected(index)"
+      >
+      </QuestionBubble>
+    </div>
+    <QuestionCard :question="selectedQuestion" v-if="selectedQuestion" />
   </div>
 </template>
 <script setup lang="ts">
@@ -21,18 +24,20 @@ import router from "@/router";
 /*-------Local Import---------*/
 /*-------Local Component Import---------*/
 import QuestionBubble from "@/components/QuestionBubble.vue";
+import QuestionCard from "@/components/QuestionCard.vue";
 /*-------Local Component Import---------*/
 /*-------Constant Import---------*/
 import REQUEST_URL from "@/constants/BASE_URL";
 /*-------Constant Import---------*/
 /*-------Interface Import---------*/
-import { QUESTION, RESPONSE } from "@/interfaces/Interface";
+import { QUESTION, RESPONSE, SELECTEDQUESTION } from "@/interfaces/Interface";
 import DIFFICULTY from "@/constants/Difficulty";
 /*-------Interface Import---------*/
 /*-------Ref Declarations---------*/
 const loading = ref<boolean>(true);
 const difficulty = ref<string>("");
 const questions = ref<QUESTION[]>([]);
+const selectedQuestion = ref<SELECTEDQUESTION | null>(null);
 /*-------Ref Declarations---------*/
 /*-------Method Declarations---------*/
 /**
@@ -40,8 +45,8 @@ const questions = ref<QUESTION[]>([]);
  * @returns {string} difficultyLevel
  */
 const getDifficultyLevel = (): string => {
-  const difficultyLevel: string = localStorage.getItem("DIFFICULTY") as string;
-  return difficultyLevel;
+  const difficultyLevel: string | null = localStorage.getItem("DIFFICULTY");
+  return difficultyLevel || "";
 };
 
 const isValidDifficulty = (difficulty: string): boolean => {
@@ -67,6 +72,13 @@ const fetchQuestions = async (): Promise<void> => {
     loading.value = false;
   }
 };
+
+const isQuestionSelected = (index: number): string => {
+  if (selectedQuestion.value) {
+    if (index !== selectedQuestion.value.index) return "";
+  }
+  return "selected-question";
+};
 /*-------Method Declarations---------*/
 /*-------Watcher---------*/
 watch(difficulty, async () => {
@@ -74,6 +86,15 @@ watch(difficulty, async () => {
     fetchQuestions();
   } else {
     window.alert("Failed to fetch questions");
+  }
+});
+
+watch(questions, () => {
+  if (questions.value.length) {
+    selectedQuestion.value = {
+      index: 0,
+      question: questions.value[0],
+    };
   }
 });
 /*-------Watcher---------*/
@@ -93,4 +114,22 @@ onUnmounted(() => {
   localStorage.removeItem("DIFFICULTY");
 });
 </script>
-<style scoped></style>
+<style scoped>
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bubble-block {
+  margin-bottom: 5rem;
+}
+
+.selected-question {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0 0px 9px -4px #3b71ca inset;
+}
+</style>

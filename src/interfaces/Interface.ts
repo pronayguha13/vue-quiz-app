@@ -11,3 +11,8 @@ export interface RESPONSE {
   response_code: number;
   results: QUESTION[];
 }
+
+export interface SELECTEDQUESTION {
+  index: number;
+  question: QUESTION;
+}

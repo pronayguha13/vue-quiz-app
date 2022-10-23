@@ -1,16 +1,51 @@
 <template>
-  <div class="option-container lead">{{ option }}</div>
+  <div
+    class="option-container lead"
+    :class="{ 'correct-selection': isSuccess }"
+    @click="handleOptionClick"
+  >
+    {{ option.value.toString() }}
+  </div>
 </template>
 
 <script setup lang="ts">
 /*-----Third Party Import-----*/
-import { defineProps } from "vue";
+import { defineProps, defineEmits, ref, watch } from "vue";
 /*-----Third Party Import-----*/
+/*-----Interface Import-----*/
+import { Option } from "@/interfaces/Interface";
+/*-----Interface Import-----*/
 /*-----Props declaration-----*/
 const props = defineProps({
-  option: { type: String, required: true },
+  option: { type: Object as () => Option, required: true },
 });
 /*-----Props declaration-----*/
+/*-----Emit declaration-----*/
+const emit = defineEmits(["correct-selection", "incorrect-selection"]);
+/*-----Emit declaration-----*/
+/*-----Ref declaration-----*/
+const isSuccess = ref<boolean>(false);
+/*-----Ref declaration-----*/
+/*-----Methods declaration-----*/
+const handleOptionClick = (): void => {
+  if (props.option.isCorrect) {
+    isSuccess.value = true;
+    emit("correct-selection");
+  } else {
+    window.alert("Incorrect!");
+    emit("incorrect-selection");
+    isSuccess.value = false;
+  }
+};
+/*-----Methods declaration-----*/
+/*-----Watcher-----*/
+watch(
+  () => props.option.value,
+  () => {
+    isSuccess.value = false;
+  }
+);
+/*-----Watcher-----*/
 </script>
 
 <style scoped>
@@ -25,5 +60,10 @@ const props = defineProps({
   background-color: #1266f1;
   color: #fbfbfb;
   font-weight: 600;
+}
+
+.correct-selection {
+  background-color: #00b74a;
+  color: #fbfbfb;
 }
 </style>

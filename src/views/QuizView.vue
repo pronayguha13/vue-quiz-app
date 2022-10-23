@@ -1,16 +1,22 @@
 <template>
   <MDBSpinner grow color="success" v-if="loading" />
-  <div class="container">
+  <div class="container" v-else>
+    <div class="card score-card">{{ `Your Score: ${score} / 10` }}</div>
     <div class="bubble-block">
       <QuestionBubble
         v-for="(question, index) in questions"
         :key="index"
         :question-number="index + 1"
-        :class="isQuestionSelected(index)"
+        :class="{ 'selected-question': isQuestionSelected(index) }"
+        :disabled="isQuestionSelected(index)"
       >
       </QuestionBubble>
     </div>
-    <QuestionCard :question="selectedQuestion" v-if="selectedQuestion" />
+    <QuestionCard
+      :question="selectedQuestion"
+      v-if="selectedQuestion"
+      @question-change="handleQuestionChange"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -38,6 +44,7 @@ const loading = ref<boolean>(true);
 const difficulty = ref<string>("");
 const questions = ref<QUESTION[]>([]);
 const selectedQuestion = ref<SELECTEDQUESTION | null>(null);
+const score = ref<number>(0);
 /*-------Ref Declarations---------*/
 /*-------Method Declarations---------*/
 /**
@@ -73,11 +80,35 @@ const fetchQuestions = async (): Promise<void> => {
   }
 };
 
-const isQuestionSelected = (index: number): string => {
+const isQuestionSelected = (index: number): boolean => {
   if (selectedQuestion.value) {
-    if (index !== selectedQuestion.value.index) return "";
+    if (index !== selectedQuestion.value.index) return false;
   }
-  return "selected-question";
+  return true;
+};
+/**
+ * @description Function to handle the change of the displayed question in the card
+ * @param {number} nextQuestionId
+ */
+const handleQuestionChange = (
+  nextQuestionId: number,
+  correct: boolean
+): void => {
+  if (correct) {
+    score.value = score.value + 1;
+  }
+  if (questions.value.length < nextQuestionId + 1) {
+    if (nextQuestionId + 1 === 11) {
+      window.alert("Total Score: " + score.value + "/10");
+      router.push("/");
+    }
+  } else {
+    const newSelectedQuestion = questions.value[nextQuestionId];
+    selectedQuestion.value = {
+      index: nextQuestionId,
+      question: newSelectedQuestion,
+    };
+  }
 };
 /*-------Method Declarations---------*/
 /*-------Watcher---------*/
@@ -121,6 +152,13 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.score-card {
+  width: 100%;
+  max-width: 540px;
+  padding: 2rem;
+  margin-bottom: 2rem;
 }
 
 .bubble-block {

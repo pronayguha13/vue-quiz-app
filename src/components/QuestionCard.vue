@@ -12,6 +12,8 @@
           v-for="(option, index) in options"
           :key="index"
           :option="option"
+          @correct-selection="handleCorrectSelection"
+          @incorrect-selection="handleIncorrectSelection"
         />
       </div>
     </div>
@@ -20,11 +22,11 @@
 
 <script setup lang="ts">
 /*---------Third Party Import---------*/
-import { computed, defineProps } from "vue";
+import { computed, defineProps, defineEmits } from "vue";
 import { MDBBtn } from "mdb-vue-ui-kit";
 /*---------Third Party Import---------*/
 /*---------Interface Import---------*/
-import { SELECTEDQUESTION } from "@/interfaces/Interface";
+import { Option, SELECTEDQUESTION } from "@/interfaces/Interface";
 /*---------Interface Import---------*/
 /*---------Local Component Import---------*/
 import OptionBlock from "./OptionBlock.vue";
@@ -34,20 +36,45 @@ const props = defineProps({
   question: { type: Object as () => SELECTEDQUESTION | null, required: true },
 });
 /*---------Props declaration---------*/
+/*---------Emit declaration---------*/
+const emit = defineEmits(["question-change"]);
+/*---------Emit declaration---------*/
 /*---------computed---------*/
 const options = computed(() => {
   if (props.question) {
     const questionDetails = props.question.question;
-    const options = [...questionDetails.incorrect_answers];
-    options.push(questionDetails.correct_answer);
+    const options = questionDetails.incorrect_answers.map(
+      (option, index): Option => {
+        return {
+          id: index,
+          value: option,
+          isCorrect: false,
+        };
+      }
+    );
+    options.push({
+      id: 4,
+      value: questionDetails.correct_answer,
+      isCorrect: true,
+    });
     //shuffle an array
     options.sort(() => Math.random() - 0.5);
+    options.forEach((option, index) => (option.id = index));
     return options;
   } else {
     return [];
   }
 });
 /*---------computed---------*/
+/*---------Method Declaration---------*/
+const handleCorrectSelection = () => {
+  emit("question-change", props.question!.index + 1, true);
+};
+
+const handleIncorrectSelection = () => {
+  emit("question-change", props.question!.index + 1, false);
+};
+/*---------Method Declaration---------*/
 </script>
 
 <style scoped>

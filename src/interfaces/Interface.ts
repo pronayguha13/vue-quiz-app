@@ -16,3 +16,9 @@ export interface SELECTEDQUESTION {
   index: number;
   question: QUESTION;
 }
+
+export interface Option {
+  id: number;
+  value: string;
+  isCorrect: boolean;
+}

@@ -8,7 +8,10 @@
         :key="index"
         :question-number="index + 1"
         :class="{ 'selected-question': isQuestionSelected(index) }"
-        :disabled="isQuestionSelected(index)"
+        :disabled="
+          isQuestionSelected(index) || answeredQuestionsId.includes(index)
+        "
+        @click="handleQuestionChangeThroughBubble(index)"
       >
       </QuestionBubble>
     </div>
@@ -45,6 +48,7 @@ const difficulty = ref<string>("");
 const questions = ref<QUESTION[]>([]);
 const selectedQuestion = ref<SELECTEDQUESTION | null>(null);
 const score = ref<number>(0);
+const answeredQuestionsId = ref<Array<number>>([]);
 /*-------Ref Declarations---------*/
 /*-------Method Declarations---------*/
 /**
@@ -108,6 +112,34 @@ const handleQuestionChange = (
   if (correct) {
     score.value = score.value + 1;
   }
+  if (questions.value.length < nextQuestionId + 1) {
+    if (nextQuestionId + 1 === 11) {
+      window.alert("Total Score: " + score.value + "/10");
+      router.push("/");
+    }
+  } else if (answeredQuestionsId.value.includes(nextQuestionId)) {
+    for (let i = nextQuestionId + 1; i < 10; i++) {
+      if (!answeredQuestionsId.value.includes(i)) {
+        const newSelectedQuestion = questions.value[i];
+        selectedQuestion.value = {
+          index: i,
+          question: newSelectedQuestion,
+        };
+        break;
+      }
+    }
+  } else {
+    const newSelectedQuestion = questions.value[nextQuestionId];
+    selectedQuestion.value = {
+      index: nextQuestionId,
+      question: newSelectedQuestion,
+    };
+  }
+
+  answeredQuestionsId.value.push(nextQuestionId - 1);
+};
+
+const handleQuestionChangeThroughBubble = (nextQuestionId: number): void => {
   if (questions.value.length < nextQuestionId + 1) {
     if (nextQuestionId + 1 === 11) {
       window.alert("Total Score: " + score.value + "/10");

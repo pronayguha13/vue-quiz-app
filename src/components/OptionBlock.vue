@@ -4,7 +4,7 @@
     :class="{ 'correct-selection': isSuccess }"
     @click="handleOptionClick"
   >
-    {{ option.value.toString() }}
+    {{ decodeHTMLEntities(option.value) }}
   </div>
 </template>
 
@@ -15,6 +15,9 @@ import { defineProps, defineEmits, ref, watch } from "vue";
 /*-----Interface Import-----*/
 import { Option } from "@/interfaces/Interface";
 /*-----Interface Import-----*/
+/*-----Utility Import-----*/
+import { decodeHTMLEntities } from "@/utils/helper";
+/*-----Utility Import-----*/
 /*-----Props declaration-----*/
 const props = defineProps({
   option: { type: Object as () => Option, required: true },

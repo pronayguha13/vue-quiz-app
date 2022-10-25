@@ -5,7 +5,7 @@
     </MDBBtn>
     <div class="card">
       <span class="question fs-4 text fw-bold">{{
-        question.question.question
+        decodeHTMLEntities(question.question.question)
       }}</span>
       <div class="options">
         <OptionBlock
@@ -31,6 +31,9 @@ import { Option, SELECTEDQUESTION } from "@/interfaces/Interface";
 /*---------Local Component Import---------*/
 import OptionBlock from "./OptionBlock.vue";
 /*---------Local Component Import---------*/
+/*---------Utility Import---------*/
+import { decodeHTMLEntities } from "@/utils/helper";
+/*---------Utility Import---------*/
 /*---------Props declaration---------*/
 const props = defineProps({
   question: { type: Object as () => SELECTEDQUESTION | null, required: true },
